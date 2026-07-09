@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foodie Express | Premium Food Delivery</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar">
+            <h2 class="logo">Foodie<span>Express</span></h2>
+
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#restaurants">Restaurants</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#cart">Cart (<span id="cart-count">0</span>)</a></li>
+            </ul>
+
+            <button class="login-btn">Sign In</button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Delicious Food Delivered To Your Doorstep</h1>
+            <p>Hungry? Order signature dishes from top-rated kitchens and local favorites in minutes with lightning-fast delivery.</p>
+
+            <div class="search-box">
+                <input type="text" placeholder="Search for burgers, pizza, sushi...">
+                <button id="search-btn">Find Food</button>
+            </div>
+        </div>
+
+        <div class="hero-image-container">
+            <div class="hero-shape-badge">Fast Delivery</div>
+                <img src="images/Premium Gourmet Burger Combo.jpg" alt="Premium Gourmet Burger Combo" class="hero-img-fluid">
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories">
+        <h2>Explore Popular Categories</h2>
+        <div class="category-container">
+            <div class="category">Pizza</div>
+            <div class="category">Burger</div>
+            <div class="category">Sushi</div>
+            <div class="category">Healthy</div>
+            <div class="category">Dessert</div>
+            <div class="category">Drinks</div>
+        </div>
+    </section>
+
+    <!-- Restaurants -->
+    <section id="restaurants" class="restaurants">
+        <h2>Featured Restaurants</h2>
+        <div class="restaurant-container">
+
+            <div class="restaurant-card">
+                <img src="images/smash-burgers-featured.jpg" alt="Burger House">
+                <div class="card-content">
+                    <h3>The Classic Burger House</h3>
+                    <p class="meta">Ratings: 4.8 • 15-25 min • Free Delivery</p>
+                    <p class="desc">Gourmet smash burgers crafted with 100% prime Angus beef and homemade sauces.</p>
+                    <a href="#menu" class="view-menu-btn">View Menu</a>
+                </div>
+            </div>
+
+            <div class="restaurant-card">
+                <img src="images/Neapolitan sourdough pizza.jpg" alt="Pizza Palace">
+                <div class="card-content">
+                    <h3>Artisan Pizza Palace</h3>
+                    <p class="meta">Ratings: 4.9 • 20-30 min • $1.99 Delivery</p>
+                    <p class="desc">Authentic wood-fired Neapolitan sourdough pizza topped with fresh, locally-sourced ingredients.</p>
+                    <a href="#menu" class="view-menu-btn">View Menu</a>
+                </div>
+            </div>
+
+            <div class="restaurant-card">
+                <img src="images/salmon-and-avocado-roll.webp" alt="Sushi World">
+                <div class="card-content">
+                    <h3>Zen Sushi World</h3>
+                    <p class="meta">Ratings: 4.7 • 25-35 min • $2.99 Delivery</p>
+                    <p class="desc">Masterfully prepared sashimi, premium specialty rolls, and fresh Japanese comfort bowls.</p>
+                    <a href="#menu" class="view-menu-btn">View Menu</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="menu">
+        <h2>Popular Handcrafted Dishes</h2>
+        <div class="menu-container">
+
+            <div class="food-card">
+                <img src="images/pepperoni-pizza.png" alt="Pizza">
+                <div class="food-card-content">
+                    <h3>Double Pepperoni Pizza</h3>
+                    <p class="food-desc">Spicy Italian pepperoni, premium whole-milk mozzarella, and signature hot-honey drizzle.</p>
+                    <div class="food-footer">
+                        <span class="price">$12.99</span>
+                        <button class="add-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="images/bacon-cheese-burger.jpg" alt="Burger">
+                <div class="food-card-content">
+                    <h3>Bacon Cheddar Burger</h3>
+                    <p class="food-desc">Toasted brioche bun, thick-cut applewood smoked bacon, aged cheddar, and crisp house pickles.</p>
+                    <div class="food-footer">
+                        <span class="price">$8.99</span>
+                        <button class="add-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="food-card">
+                <img src="images/fresh-salmon-sushi.webp" alt="Sushi">
+                <div class="food-card-content">
+                    <h3>Signature Salmon Sushi</h3>
+                    <p class="food-desc">Freshly sliced premium Atlantic salmon served over pristine seasoned sushi rice with wasabi.</p>
+                    <div class="food-footer">
+                        <span class="price">$15.99</span>
+                        <button class="add-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Cart Section -->
+    <section id="cart" class="cart-section">
+        <div class="cart-wrapper">
+            <h2>Your Shopping Cart</h2>
+
+            <div id="cart-items">
+                <p class="empty-msg">Your cart is empty. Explore our menu to add items!</p>
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>$<span id="total-price">0.00</span></span>
+                </div>
+                <div class="summary-row delivery-fee">
+                    <span>Estimated Delivery Fee</span>
+                    <span>Free</span>
+                </div>
+                <hr>
+                <button class="checkout-btn">Proceed to Checkout</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Foodie Express Inc. All Rights Reserved. Crafted for delicious experiences.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>ds
