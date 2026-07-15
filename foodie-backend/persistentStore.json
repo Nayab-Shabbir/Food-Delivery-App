@@ -1,0 +1,239 @@
+{
+  "users": {
+    "nayab": {
+      "password": "$2b$10$mqfSQVSje.tRPq6UniScsObcWy352L7cOFxS4rdAdrIbPt4hUvBUW"
+    },
+    "nayab-1": {
+      "password": "$2b$10$mtW0cX1FgozocYzIUSVY0.yQCPiGBs920zpj0HKpfriuWOZ.fGd8u"
+    },
+    "naya": {
+      "password": "$2b$10$oP2afv3lX.vRI/oUqVMpzemgaX23jbha3MYfXiRhQiijGkb7CSVAq"
+    },
+    "shabbir": {
+      "password": "$2b$10$oPoqdmITqIBdf0A5U2crE.QeZXMEnjiCooo/bKAyeWbEtJmPJ5rGm"
+    }
+  },
+  "carts": {
+    "nayab": [],
+    "nayab-1": [
+      {
+        "id": 3,
+        "name": "Signature Salmon Sushi",
+        "price": 15.99,
+        "qty": 1
+      },
+      {
+        "id": 1,
+        "name": "Double Pepperoni Pizza",
+        "price": 12.99,
+        "qty": 1
+      }
+    ],
+    "naya": [],
+    "shabbir": []
+  },
+  "orders": [
+    {
+      "orderId": "ORD-1784047364634-677",
+      "timestamp": "2026-07-14T16:42:44.634Z",
+      "customer": "nayab-1",
+      "purchasedItems": [
+        {
+          "id": 2,
+          "name": "Bacon Cheddar Burger",
+          "price": 8.99,
+          "qty": 1
+        },
+        {
+          "id": 1,
+          "name": "Double Pepperoni Pizza",
+          "price": 12.99,
+          "qty": 1
+        },
+        {
+          "id": 3,
+          "name": "Signature Salmon Sushi",
+          "price": 15.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 37.97
+    },
+    {
+      "orderId": "ORD-1784047774465-473",
+      "timestamp": "2026-07-14T16:49:34.466Z",
+      "customer": "nayab",
+      "purchasedItems": [
+        {
+          "id": 2,
+          "name": "Bacon Cheddar Burger",
+          "price": 8.99,
+          "qty": 1
+        },
+        {
+          "id": 1,
+          "name": "Double Pepperoni Pizza",
+          "price": 12.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 21.98
+    },
+    {
+      "orderId": "ORD-1784048379624-261",
+      "timestamp": "2026-07-14T16:59:39.624Z",
+      "customer": "nayab",
+      "purchasedItems": [
+        {
+          "id": 2,
+          "name": "Bacon Cheddar Burger",
+          "price": 8.99,
+          "qty": 2
+        },
+        {
+          "id": 1,
+          "name": "Double Pepperoni Pizza",
+          "price": 12.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 30.97
+    },
+    {
+      "orderId": "ORD-1784048905880-626",
+      "timestamp": "2026-07-14T17:08:25.880Z",
+      "customer": "nayab",
+      "purchasedItems": [
+        {
+          "id": 3,
+          "name": "Signature Salmon Sushi",
+          "price": 15.99,
+          "qty": 1
+        },
+        {
+          "id": 1,
+          "name": "Double Pepperoni Pizza",
+          "price": 12.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 28.98
+    },
+    {
+      "orderId": "ORD-1784050309250-874",
+      "timestamp": "2026-07-14T17:31:49.250Z",
+      "customer": "nayab",
+      "purchasedItems": [
+        {
+          "id": 2,
+          "name": "Bacon Cheddar Burger",
+          "price": 8.99,
+          "qty": 2
+        },
+        {
+          "id": 3,
+          "name": "Signature Salmon Sushi",
+          "price": 15.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 33.97
+    },
+    {
+      "orderId": "ORD-1784050848019-789",
+      "timestamp": "2026-07-14T17:40:48.039Z",
+      "customer": "nayab",
+      "purchasedItems": [
+        {
+          "id": 2,
+          "name": "Bacon Cheddar Burger",
+          "price": 8.99,
+          "qty": 1
+        },
+        {
+          "id": 3,
+          "name": "Signature Salmon Sushi",
+          "price": 15.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 24.98
+    },
+    {
+      "orderId": "ORD-1784152311851-990",
+      "timestamp": "2026-07-15T21:51:51.851Z",
+      "customer": "shabbir",
+      "purchasedItems": [
+        {
+          "id": 1,
+          "name": "Double Pepperoni Pizza",
+          "price": 12.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 12.99
+    },
+    {
+      "orderId": "ORD-1784152323628-134",
+      "timestamp": "2026-07-15T21:52:03.628Z",
+      "customer": "shabbir",
+      "purchasedItems": [
+        {
+          "id": 2,
+          "name": "Bacon Cheddar Burger",
+          "price": 8.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 8.99
+    },
+    {
+      "orderId": "ORD-1784152654580-816",
+      "timestamp": "2026-07-15T21:57:34.580Z",
+      "customer": "shabbir",
+      "purchasedItems": [
+        {
+          "id": 1,
+          "name": "Double Pepperoni Pizza",
+          "price": 12.99,
+          "qty": 1
+        },
+        {
+          "id": 3,
+          "name": "Signature Salmon Sushi",
+          "price": 15.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 28.98
+    },
+    {
+      "orderId": "ORD-1784152671747-139",
+      "timestamp": "2026-07-15T21:57:51.747Z",
+      "customer": "shabbir",
+      "purchasedItems": [
+        {
+          "id": 2,
+          "name": "Bacon Cheddar Burger",
+          "price": 8.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 8.99
+    },
+    {
+      "orderId": "ORD-1784152830290-262",
+      "timestamp": "2026-07-15T22:00:30.290Z",
+      "customer": "shabbir",
+      "purchasedItems": [
+        {
+          "id": 3,
+          "name": "Signature Salmon Sushi",
+          "price": 15.99,
+          "qty": 1
+        }
+      ],
+      "totalAmountPaid": 15.99
+    }
+  ]
+}
