@@ -13,6 +13,7 @@
 </head>
 <body>
 
+    <div id="toast-container"></div>
     <!-- Navbar -->
     <header>
         <nav class="navbar">
@@ -43,7 +44,7 @@
 
         <div class="hero-image-container">
             <div class="hero-shape-badge">Fast Delivery</div>
-                <img src="images/Premium-Gourmet-Burger-Combo.jpg" alt="Premium Gourmet Burger Combo" class="hero-img-fluid">
+            <img src="images/Premium-Gourmet-Burger-Combo.jpg" alt="Premium Gourmet Burger Combo" class="hero-img-fluid">
         </div>
     </section>
 
@@ -98,47 +99,13 @@
         </div>
     </section>
 
-    <!-- Menu Section -->
+    <!-- Menu Section (Populated dynamically via Backend API) -->
     <section id="menu" class="menu">
         <h2>Popular Handcrafted Dishes</h2>
         <div class="menu-container">
-
-            <div class="food-card">
-                <img src="images/pepperoni-pizza.png" alt="Pizza">
-                <div class="food-card-content">
-                    <h3>Double Pepperoni Pizza</h3>
-                    <p class="food-desc">Spicy Italian pepperoni, premium whole-milk mozzarella, and signature hot-honey drizzle.</p>
-                    <div class="food-footer">
-                        <span class="price">$12.99</span>
-                        <button class="add-cart">Add to Cart</button>
-                    </div>
-                </div>
+            <div class="menu-loading-spinner">
+                <p>⌛ Loading delicious dishes from backend...</p>
             </div>
-
-            <div class="food-card">
-                <img src="images/bacon-cheese-burger.jpg" alt="Burger">
-                <div class="food-card-content">
-                    <h3>Bacon Cheddar Burger</h3>
-                    <p class="food-desc">Toasted brioche bun, thick-cut applewood smoked bacon, aged cheddar, and crisp house pickles.</p>
-                    <div class="food-footer">
-                        <span class="price">$8.99</span>
-                        <button class="add-cart">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="food-card">
-                <img src="images/fresh-salmon-sushi.webp" alt="Sushi">
-                <div class="food-card-content">
-                    <h3>Signature Salmon Sushi</h3>
-                    <p class="food-desc">Freshly sliced premium Atlantic salmon served over pristine seasoned sushi rice with wasabi.</p>
-                    <div class="food-footer">
-                        <span class="price">$15.99</span>
-                        <button class="add-cart">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </section>
 
@@ -166,30 +133,31 @@
         </div>
     </section>
 
+    <!-- Auth Modal -->
     <div id="auth-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-card">
-        <span id="close-auth-modal" class="modal-close-btn">&times;</span>
-        
-        <h2 id="auth-modal-title" class="modal-title">Welcome Back</h2>
-        <p id="auth-modal-subtitle" class="modal-subtitle">Sign in to unlock personalized menus and direct checkout.</p>
-        
-        <form id="modal-auth-form">
-            <div class="form-group">
-                <label class="form-label">Username</label>
-                <input type="text" id="auth-username" required placeholder="Enter your username" class="form-input">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Password</label>
-                <input type="password" id="auth-password" required placeholder="••••••••" class="form-input">
-            </div>
-            <button type="submit" id="auth-submit-btn" class="form-submit-btn">Continue Securely</button>
-        </form>
-        
-        <p class="modal-switch-text">
-            <span id="toggle-auth-mode-text">New to Foodie Express? </span>
-            <a href="#" id="toggle-auth-mode" class="modal-switch-link">Create an account</a>
-        </p>
-    </div>
+        <div class="modal-card">
+            <span id="close-auth-modal" class="modal-close-btn">&times;</span>
+            
+            <h2 id="auth-modal-title" class="modal-title">Welcome Back</h2>
+            <p id="auth-modal-subtitle" class="modal-subtitle">Sign in to unlock personalized menus and direct checkout.</p>
+            
+            <form id="modal-auth-form">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="auth-username" required placeholder="Enter your username" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="auth-password" autocomplete="current-password" required placeholder="••••••••" class="form-input">
+                </div>
+                <button type="submit" id="auth-submit-btn" class="form-submit-btn">Continue Securely</button>
+            </form>
+            
+            <p class="modal-switch-text">
+                <span id="toggle-auth-mode-text">New to Foodie Express? </span>
+                <a href="#" id="toggle-auth-mode" class="modal-switch-link">Create an account</a>
+            </p>
+        </div>
     </div>
 
     <!-- Footer -->

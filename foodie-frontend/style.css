@@ -1,8 +1,9 @@
 html {
     scroll-behavior: smooth;
 }
-/* ========== RESET & CORE VARIABES ========== */
-*{
+
+/* ========== RESET & CORE VARIABLES ========== */
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -20,30 +21,26 @@ html {
     --border-radius: 12px;
 }
 
-html {
-    scroll-behavior: smooth;
-}
-
-body{
+body {
     font-family: 'Poppins', sans-serif;
     background: var(--bg-light);
     color: var(--text-main);
     line-height: 1.6;
 }
 
-img{
+img {
     width: 100%;
     height: 200px;
     object-fit: cover;
     display: block;
 }
 
-a{
+a {
     text-decoration: none;
     color: inherit;
 }
 
-button{
+button {
     cursor: pointer;
     border: none;
     font-family: 'Poppins', sans-serif;
@@ -52,7 +49,7 @@ button{
 }
 
 /* ========== NAVBAR ========== */
-.navbar{
+.navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -64,7 +61,7 @@ button{
     z-index: 100;
 }
 
-.logo{
+.logo {
     font-weight: 700;
     color: var(--text-main);
 }
@@ -73,35 +70,35 @@ button{
     color: var(--primary);
 }
 
-.nav-links{
+.nav-links {
     display: flex;
     list-style: none;
     gap: 35px;
 }
 
-.nav-links a{
+.nav-links a {
     font-weight: 500;
     color: var(--text-muted);
 }
 
-.nav-links a:hover{
+.nav-links a:hover {
     color: var(--primary);
 }
 
-.login-btn{
+.login-btn {
     background: var(--primary);
     color: white;
     padding: 10px 24px;
     border-radius: var(--border-radius);
 }
 
-.login-btn:hover{
+.login-btn:hover {
     background: var(--primary-hover);
     transform: translateY(-1px);
 }
 
 /* ========== HERO ========== */
-.hero{
+.hero {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -110,25 +107,25 @@ button{
     background: #fff;
 }
 
-.hero-text{
+.hero-text {
     flex: 1.2;
 }
 
-.hero-text h1{
+.hero-text h1 {
     font-size: 3.2rem;
     line-height: 1.2;
     margin-bottom: 20px;
     font-weight: 700;
 }
 
-.hero-text p{
+.hero-text p {
     color: var(--text-muted);
     font-size: 1.1rem;
     margin-bottom: 35px;
     max-width: 540px;
 }
 
-.search-box{
+.search-box {
     display: flex;
     gap: 12px;
     background: #fff;
@@ -139,7 +136,7 @@ button{
     max-width: 550px;
 }
 
-.search-box input{
+.search-box input {
     flex: 1;
     padding: 14px 20px;
     border: none;
@@ -148,7 +145,7 @@ button{
     font-family: 'Poppins', sans-serif;
 }
 
-.search-box button{
+.search-box button {
     background: var(--primary);
     color: white;
     padding: 14px 28px;
@@ -203,11 +200,11 @@ button{
 }
 
 /* ========== SECTIONS GENERAL ========== */
-section{
+section {
     padding: 80px 8%;
 }
 
-section h2{
+section h2 {
     text-align: center;
     margin-bottom: 40px;
     font-size: 2.2rem;
@@ -215,13 +212,13 @@ section h2{
 }
 
 /* ========== CATEGORIES ========== */
-.category-container{
+.category-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 20px;
 }
 
-.category{
+.category {
     background: white;
     padding: 24px 15px;
     text-align: center;
@@ -233,7 +230,7 @@ section h2{
     border: 1px solid transparent;
 }
 
-.category:hover{
+.category:hover {
     transform: translateY(-6px);
     border-color: var(--primary);
     color: var(--primary);
@@ -241,13 +238,13 @@ section h2{
 }
 
 /* ========== RESTAURANTS ========== */
-.restaurant-container{
+.restaurant-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
 }
 
-.restaurant-card{
+.restaurant-card {
     background: white;
     border-radius: var(--border-radius);
     overflow: hidden;
@@ -255,7 +252,7 @@ section h2{
     transition: all 0.3s ease;
 }
 
-.restaurant-card:hover{
+.restaurant-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
 }
@@ -264,7 +261,7 @@ section h2{
     padding: 24px;
 }
 
-.restaurant-card h3{
+.restaurant-card h3 {
     font-size: 1.3rem;
     margin-bottom: 6px;
 }
@@ -282,7 +279,7 @@ section h2{
     margin-bottom: 24px;
 }
 
-.view-menu-btn{
+.view-menu-btn {
     display: block;
     text-align: center;
     background: var(--bg-light);
@@ -299,13 +296,21 @@ section h2{
 }
 
 /* ========== MENU & FOOD CARDS ========== */
-.menu-container{
+.menu-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
 }
 
-.food-card{
+.menu-loading-spinner {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.food-card {
     background: white;
     border-radius: var(--border-radius);
     overflow: hidden;
@@ -315,7 +320,7 @@ section h2{
     flex-direction: column;
 }
 
-.food-card:hover{
+.food-card:hover {
     transform: translateY(-4px);
 }
 
@@ -326,7 +331,7 @@ section h2{
     flex-grow: 1;
 }
 
-.food-card h3{
+.food-card h3 {
     font-size: 1.25rem;
     margin-bottom: 8px;
 }
@@ -350,7 +355,7 @@ section h2{
     color: var(--text-main);
 }
 
-.add-cart{
+.add-cart {
     background: var(--primary);
     color: white;
     padding: 10px 20px;
@@ -358,7 +363,7 @@ section h2{
     font-weight: 600;
 }
 
-.add-cart:hover{
+.add-cart:hover {
     background: var(--primary-hover);
 }
 
@@ -368,7 +373,7 @@ section h2{
     border-top: 1px solid #eee;
 }
 
-.cart-wrapper{
+.cart-wrapper {
     max-width: 750px;
     margin: 0 auto;
     background: white;
@@ -378,7 +383,7 @@ section h2{
     border: 1px solid #eee;
 }
 
-#cart-items{
+#cart-items {
     margin: 24px 0;
     min-height: 60px;
 }
@@ -482,7 +487,7 @@ hr {
     margin: 20px 0;
 }
 
-.checkout-btn{
+.checkout-btn {
     display: block;
     width: 100%;
     text-align: center;
@@ -494,20 +499,12 @@ hr {
     font-weight: 600;
 }
 
-.checkout-btn:hover{
+.checkout-btn:hover {
     background: var(--secondary-hover);
     box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
 }
 
-/* ==========================================================
-   FOODIE EXPRESS - SECURE AUTHENTICATION MODAL PRESENTATION
-   ========================================================== */
-
-/* ==========================================================
-   FOODIE EXPRESS - SECURE AUTHENTICATION MODAL & TOASTS
-   ========================================================== */
-
-/* Fullscreen Background Blur Overlay */
+/* ========== AUTH MODAL & TOASTS ========== */
 .modal-overlay {
     display: none; 
     position: fixed; 
@@ -516,7 +513,7 @@ hr {
     width: 100%; 
     height: 100%; 
     background: rgba(0, 0, 0, 0.55); 
-    backdrop-filter: blur(4px); /* Modern frosted-glass effect */
+    backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     z-index: 10000; 
     justify-content: center; 
@@ -525,7 +522,6 @@ hr {
     transition: all 0.3s ease;
 }
 
-/* Central Login/Registration Form Card Wrapper */
 .modal-card {
     background: #ffffff; 
     padding: 35px 30px; 
@@ -538,7 +534,6 @@ hr {
     animation: modalSlideIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Subtle Entry Animation for Form Pop */
 @keyframes modalSlideIn {
     from {
         transform: translateY(-30px);
@@ -550,7 +545,6 @@ hr {
     }
 }
 
-/* Absolute Positioned Close (&times;) Element Button */
 .modal-close-btn {
     position: absolute; 
     top: 15px; 
@@ -566,7 +560,6 @@ hr {
     color: #222222;
 }
 
-/* Form Headings and Label Typographies */
 .modal-title {
     margin-top: 0; 
     margin-bottom: 8px !important; 
@@ -600,7 +593,6 @@ hr {
     letter-spacing: 0.5px;
 }
 
-/* Clean Form Inputs layout fields styling */
 .form-input {
     width: 100%; 
     padding: 12px 16px; 
@@ -617,10 +609,9 @@ hr {
     outline: none;
     background: #ffffff;
     border-color: #e65100;
-    box-shadow: 0 0 0 4px rgba(230, 81, 0, 0.12); /* Soft focus ring outline */
+    box-shadow: 0 0 0 4px rgba(230, 81, 0, 0.12);
 }
 
-/* Secure Core CTA Proceed Action Button Component */
 .form-submit-btn {
     width: 100%; 
     background: #e65100; 
@@ -643,10 +634,9 @@ hr {
 }
 
 .form-submit-btn:active {
-    transform: scale(0.98); /* Tactile press feedback */
+    transform: scale(0.98);
 }
 
-/* Underform Helper and Toggles Styles Links layout */
 .modal-switch-text {
     text-align: center; 
     margin-top: 20px; 
@@ -667,9 +657,7 @@ hr {
     text-decoration: underline;
 }
 
-/* ==========================================================
-   MODERN TOAST NOTIFICATIONS (Replaces ugly alert() boxes)
-   ========================================================== */
+/* ========== TOAST NOTIFICATIONS ========== */
 #toast-container {
     position: fixed;
     top: 24px;
@@ -696,7 +684,7 @@ hr {
     font-family: inherit;
     font-size: 0.95rem;
     font-weight: 500;
-    border-left: 5px solid #e65100; /* Default brand line */
+    border-left: 5px solid #e65100;
     transform: translateX(120%);
     transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
     opacity: 0;
@@ -707,10 +695,9 @@ hr {
     opacity: 1;
 }
 
-/* Toast Color States */
-.toast.toast-success { border-left-color: #10B981; } /* Foodie Green */
-.toast.toast-error { border-left-color: #EF4444; }   /* Red Alert */
-.toast.toast-info { border-left-color: #3B82F6; }    /* Blue Info */
+.toast.toast-success { border-left-color: #10B981; }
+.toast.toast-error { border-left-color: #EF4444; }
+.toast.toast-info { border-left-color: #3B82F6; }
 
 .toast-icon {
     font-size: 1.25rem;
@@ -718,7 +705,7 @@ hr {
 }
 
 /* ========== FOOTER ========== */
-footer{
+footer {
     background: #111;
     color: #888;
     text-align: center;
@@ -727,28 +714,28 @@ footer{
 }
 
 /* ========== RESPONSIVE BREAKPOINTS ========== */
-@media(max-width:768px){
-    .navbar{
+@media(max-width:768px) {
+    .navbar {
         flex-direction: column;
         gap: 20px;
         padding: 20px;
     }
 
-    .nav-links{
+    .nav-links {
         gap: 20px;
     }
 
-    .hero{
+    .hero {
         flex-direction: column-reverse;
         text-align: center;
         padding: 50px 6%;
     }
 
-    .hero-text h1{
+    .hero-text h1 {
         font-size: 2.4rem;
     }
 
-    .search-box{
+    .search-box {
         flex-direction: column;
         box-shadow: none;
         border: none;
@@ -762,7 +749,7 @@ footer{
         border-radius: var(--border-radius);
     }
 
-    .hero-image{
+    .hero-image {
         font-size: 5rem;
         margin-bottom: 20px;
     }

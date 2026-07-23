@@ -1,5 +1,5 @@
 // ==========================================================
-// FOODIE EXPRESS - COMPREHENSIVE FRONTEND INTERACTION ENGINE
+// FOODIE EXPRESS - FRONTEND ENGINE WITH FULL API INTEGRATION
 // ==========================================================
 document.addEventListener("DOMContentLoaded", () => {
     // UI DOM Elements
@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchButton = document.getElementById("search-btn");
     const checkoutBtn = document.querySelector(".checkout-btn");
     const loginBtn = document.querySelector(".login-btn");
+    const menuContainer = document.querySelector(".menu-container");
     
     // Auth Modal DOM Elements
     const authModal = document.getElementById("auth-modal");
@@ -30,11 +31,74 @@ document.addEventListener("DOMContentLoaded", () => {
     let isLoginMode = true; 
     const BACKEND_URL = "http://localhost:3000/api/v1";
 
-    // Initialize UI Elements Safely
+    // Initialize UI Elements & Fetch Dynamic Data
     updateLoginButtonUI();
+    fetchMenuItems();
     
     if (localStorage.getItem("foodie_token")) {
         syncWithBackend();
+    }
+
+    // ==========================================================
+    // DYNAMIC MENU FETCHING ENGINE (WITH MONGODB COMPATIBLE IDs)
+    // ==========================================================
+    async function fetchMenuItems() {
+        if (!menuContainer) return;
+        
+        try {
+            const response = await fetch(`${BACKEND_URL}/items`, {
+                signal: AbortSignal.timeout(5000)
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const menuData = await response.json();
+            renderMenuItems(menuData);
+        } catch (error) {
+            console.warn("⚠️ Backend menu fetch unavailable. Falling back to default items.", error);
+            renderDefaultFallbackMenu();
+        }
+    }
+
+    function renderMenuItems(items) {
+        if (!menuContainer) return;
+        menuContainer.innerHTML = "";
+
+        if (!items || items.length === 0) {
+            menuContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #666;">No items available right now.</p>`;
+            return;
+        }
+
+        items.forEach(item => {
+            // Guarantee string format for MongoDB ObjectId or string IDs
+            const itemId = String(item._id || item.id);
+            const card = document.createElement("div");
+            card.className = "food-card";
+            card.dataset.id = itemId;
+
+            card.innerHTML = `
+                <img src="${item.image || 'images/pepperoni-pizza.png'}" alt="${item.name}">
+                <div class="food-card-content">
+                    <h3>${item.name}</h3>
+                    <p class="food-desc">${item.description || ''}</p>
+                    <div class="food-footer">
+                        <span class="price">$${Number(item.price).toFixed(2)}</span>
+                        <button class="add-cart" data-id="${itemId}">Add to Cart</button>
+                    </div>
+                </div>
+            `;
+            menuContainer.appendChild(card);
+        });
+    }
+
+    function renderDefaultFallbackMenu() {
+        // Valid 24-character hex strings for MongoDB / Mongoose ObjectId compatibility
+        const defaultItems = [
+            { id: "65f1a2b3c4d5e6f789012341", name: "Double Pepperoni Pizza", price: 12.99, description: "Spicy Italian pepperoni, premium whole-milk mozzarella, and signature hot-honey drizzle.", image: "images/pepperoni-pizza.png" },
+            { id: "65f1a2b3c4d5e6f789012342", name: "Bacon Cheddar Burger", price: 8.99, description: "Toasted brioche bun, thick-cut applewood smoked bacon, aged cheddar, and crisp house pickles.", image: "images/bacon-cheese-burger.jpg" },
+            { id: "65f1a2b3c4d5e6f789012343", name: "Signature Salmon Sushi", price: 15.99, description: "Freshly sliced premium Atlantic salmon served over pristine seasoned sushi rice with wasabi.", image: "images/fresh-salmon-sushi.webp" }
+        ];
+        renderMenuItems(defaultItems);
     }
 
     // ==========================================================
@@ -130,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================================
-    // BULLETPROOF MODAL AUTH CONTROLLER ENGINE
+    // MODAL AUTH CONTROLLER ENGINE
     // ==========================================================
     if (loginBtn) {
         loginBtn.addEventListener("click", (e) => {
@@ -241,12 +305,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const btn = e.target;
             const card = btn.closest(".food-card");
-            if (!card) return;
-            const name = card.querySelector("h3").innerText.toLowerCase();
+            
+            // Extract the valid 24-character ObjectId string directly from data attributes
+            const serverItemId = btn.dataset.id || (card ? card.dataset.id : null);
 
-            let serverItemId = 1; 
-            if (name.includes("burger")) serverItemId = 2;
-            if (name.includes("sushi")) serverItemId = 3;
+            if (!serverItemId) {
+                showToast("Could not identify item ID.", "error");
+                return;
+            }
 
             try {
                 const response = await fetch(`${BACKEND_URL}/cart`, {
@@ -257,7 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const data = await response.json();
 
-                if (data.success) {
+                if (response.ok && (data.success || data.cart)) {
                     updateFrontendCartUI(data.cart);
                     showToast(`Added ${card.querySelector("h3").innerText} to your cart!`, "success");
                     btn.innerText = "Added!✓";
@@ -269,6 +335,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         btn.style.backgroundColor = "";
                         btn.style.color = "";
                     }, 800);
+                } else {
+                    showToast(data.error || "Failed to update cart.", "error");
                 }
             } catch (error) {
                 showToast("Could not sync item to cart on server.", "error");
@@ -284,9 +352,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ itemId, change })
             });
             const data = await response.json();
-            if (data.success) {
+            if (response.ok && (data.success || data.cart)) {
                 updateFrontendCartUI(data.cart);
                 showToast("Cart updated.", "info");
+            } else {
+                showToast(data.error || "Failed to alter quantity.", "error");
             }
         } catch (err) { 
             showToast("Failed to alter quantity.", "error");
@@ -301,9 +371,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({ itemId })
             });
             const data = await response.json();
-            if (data.success) {
+            if (response.ok && (data.success || data.cart)) {
                 updateFrontendCartUI(data.cart);
                 showToast("Item removed from cart.", "info");
+            } else {
+                showToast(data.error || "Failed to remove item.", "error");
             }
         } catch (err) { 
             showToast("Failed to remove item.", "error");
@@ -314,7 +386,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!cartItemsContainer) return;
         cartItemsContainer.innerHTML = "";
         
-        // Check if there is a deliberate checkout confirmation message to display
         if (customHtmlMessage) {
             cartItemsContainer.innerHTML = customHtmlMessage;
             if (totalPriceEl) totalPriceEl.innerText = "0.00";
@@ -331,22 +402,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let total = 0, totalQty = 0;
         cartArray.forEach((item) => {
-            total += item.price * item.qty;
-            totalQty += item.qty;
+            const qty = item.qty || item.quantity || 1;
+            const price = Number(item.price || 0);
+            total += price * qty;
+            totalQty += qty;
+
+            const itemId = String(item.id || item._id);
 
             const row = document.createElement("div");
             row.className = "cart-item-row";
             row.innerHTML = `
                 <div class="cart-item-info">
                     <span class="cart-item-name">${item.name}</span>
-                    <span class="cart-item-price">$${item.price.toFixed(2)} each</span>
+                    <span class="cart-item-price">$${price.toFixed(2)} each</span>
                 </div>
                 <div class="cart-qty-controls">
-                    <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
-                    <span class="qty-val">${item.qty}</span>
-                    <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+                    <button class="qty-btn" onclick="changeQty('${itemId}', -1)">-</button>
+                    <span class="qty-val">${qty}</span>
+                    <button class="qty-btn" onclick="changeQty('${itemId}', 1)">+</button>
                 </div>
-                <button class="delete-item-btn" onclick="removeItem(${item.id})">Delete</button>
+                <button class="delete-item-btn" onclick="removeItem('${itemId}')">Delete</button>
             `;
             cartItemsContainer.appendChild(row);
         });
@@ -356,7 +431,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==========================================================
-    // SECURE AND VISUALLY INTERACTIVE CHECKOUT DISPATCH
+    // SECURE CHECKOUT DISPATCH
     // ==========================================================
     if (checkoutBtn) {
         checkoutBtn.addEventListener("click", async () => {
@@ -381,10 +456,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 const data = await response.json();
 
-                if (response.ok && data.success) {
+                if (response.ok && (data.success || data.orderId)) {
                     showToast("Order placed successfully!", "success");
                     
-                    // Build a beautiful real-world receipt layout card right in the cart panel
                     const confirmedOrderId = data.orderId || 'FX-' + Math.floor(100000 + Math.random() * 900000);
                     const receiptHTML = `
                         <div class="order-success-box" style="text-align: center; padding: 25px 15px; background: #f0fdf4; border: 2px dashed #10b981; border-radius: 12px; margin: 10px 0;">
@@ -397,7 +471,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                     `;
                     
-                    // Render the order card directly inside the cart box
                     updateFrontendCartUI([], receiptHTML);
                 } else {
                     showToast(`⚠️ Transaction Denied: ${data.error || "Empty cart data."}`, "error");
@@ -416,17 +489,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!searchInput) return;
         const query = searchInput.value.toLowerCase().trim();
         const foodCards = document.querySelectorAll(".food-card");
-        const menuContainer = document.querySelector(".menu-container");
         
         const existingMsg = document.getElementById("search-empty-msg");
         if (existingMsg) existingMsg.remove();
         let visibleCount = 0;
 
         foodCards.forEach(card => {
-            const name = card.querySelector("h3").innerText.toLowerCase();
+            const name = card.querySelector("h3") ? card.querySelector("h3").innerText.toLowerCase() : "";
             const description = card.querySelector(".food-desc") ? card.querySelector(".food-desc").innerText.toLowerCase() : "";
             if (name.includes(query) || description.includes(query)) {
-                card.style.display = ""; visibleCount++;
+                card.style.display = ""; 
+                visibleCount++;
             } else {
                 card.style.display = "none";
             }
@@ -435,8 +508,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (visibleCount === 0 && menuContainer) {
             const noMatchMsg = document.createElement("p");
             noMatchMsg.id = "search-empty-msg";
-            noMatchMsg.style.gridColumn = "1 / -1"; noMatchMsg.style.textAlign = "center";
-            noMatchMsg.style.padding = "40px 20px"; noMatchMsg.style.fontSize = "1.1rem"; noMatchMsg.style.color = "#666";
+            noMatchMsg.style.gridColumn = "1 / -1"; 
+            noMatchMsg.style.textAlign = "center";
+            noMatchMsg.style.padding = "40px 20px"; 
+            noMatchMsg.style.fontSize = "1.1rem"; 
+            noMatchMsg.style.color = "#666";
             noMatchMsg.innerHTML = `🔍 Sorry, we couldn't find any dishes matching "<strong>${searchInput.value}</strong>".`;
             menuContainer.appendChild(noMatchMsg);
         }

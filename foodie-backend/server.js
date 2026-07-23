@@ -1,46 +1,72 @@
+require('dotenv').config(); 
+
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs').promises;
-const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+
+// Route Imports
+const itemRoutes = require('./routes/itemRoutes');
 
 const app = express();
-const PORT = 3000;
-const JWT_SECRET = "foodie_express_quantum_crypto_key_2026";
-const DATA_FILE = path.join(__dirname, 'persistentStore.json');
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || "foodie_express_quantum_crypto_key_2026";
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); 
 
+// ==========================================================
+// DATABASE CONNECTION 
+// ==========================================================
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/foodie_db';
+
+mongoose.connect(MONGODB_URI)
+    .then(() => console.log('🔌 Connected to MongoDB successfully!'))
+    .catch((err) => console.error('❌ Database connection failure:', err));
+
+// ==========================================================
+// MONGOOSE SCHEMAS & MODELS
+// ==========================================================
+
+// 1. User Schema
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true }
+}, { timestamps: true });
+
+const User = mongoose.model('User', userSchema);
+
+// 2. Cart Schema
+const cartSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    items: [{
+        itemId: { type: String, required: true },
+        name: String,
+        price: Number,
+        qty: { type: Number, default: 1 }
+    }]
+}, { timestamps: true });
+
+const Cart = mongoose.model('Cart', cartSchema);
+
+// 3. Order Schema
+const orderSchema = new mongoose.Schema({
+    orderId: { type: String, required: true, unique: true },
+    customer: { type: String, required: true },
+    purchasedItems: Array,
+    totalAmountPaid: Number,
+    timestamp: { type: Date, default: Date.now }
+}, { timestamps: true });
+
+const Order = mongoose.model('Order', orderSchema);
+
+// Fallback Inventory Lookup (if dynamic lookup isn't present)
 const menuDatabase = [
-    { id: 1, name: "Double Pepperoni Pizza", price: 12.99 },
-    { id: 2, name: "Bacon Cheddar Burger", price: 8.99 },
-    { id: 3, name: "Signature Salmon Sushi", price: 15.99 }
+    { id: "65f1a2b3c4d5e6f789012341", name: "Double Pepperoni Pizza", price: 12.99 },
+    { id: "65f1a2b3c4d5e6f789012342", name: "Bacon Cheddar Burger", price: 8.99 },
+    { id: "65f1a2b3c4d5e6f789012343", name: "Signature Salmon Sushi", price: 15.99 }
 ];
-
-// ==========================================================
-// PERSISTENCE LAYER CONTROLLER
-// ==========================================================
-async function initializeStore() {
-    try {
-        await fs.access(DATA_FILE);
-        console.log("💾 persistentStore.json found and loaded successfully.");
-    } catch {
-        console.log("💾 No persistent store found. Creating brand new database file...");
-        const initialData = { users: {}, carts: {}, orders: [] };
-        await fs.writeFile(DATA_FILE, JSON.stringify(initialData, null, 2));
-    }
-}
-
-async function readStore() {
-    const data = await fs.readFile(DATA_FILE, 'utf8');
-    return JSON.parse(data);
-}
-
-async function writeStore(data) {
-    await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
-}
 
 // ==========================================================
 // SECURITY GATEKEEPER MIDDLEWARE
@@ -65,26 +91,33 @@ function authenticateToken(req, res, next) {
 }
 
 // ==========================================================
-// AUTHENTICATION ROUTING SYSTEM
+// AUTHENTICATION ROUTING SYSTEM 
 // ==========================================================
 app.post('/api/v1/auth/register', async (req, res, next) => {
     try {
         const { username, password } = req.body;
         console.log(`👤 Register request received for: "${username}"`);
-        if (!username || !password) return res.status(400).json({ success: false, error: "Identity properties missing." });
+        
+        if (!username || !password) {
+            return res.status(400).json({ success: false, error: "Identity properties missing." });
+        }
 
-        const store = await readStore();
-        if (store.users[username]) {
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
             console.log(`⚠️ Register failed: Username "${username}" already exists.`);
             return res.status(422).json({ success: false, error: "Identity conflict." });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        store.users[username] = { password: hashedPassword };
-        store.carts[username] = [];
         
-        await writeStore(store);
-        console.log(`✅ Success: User account "${username}" created and saved to disk.`);
+        // Save user 
+        const newUser = new User({ username, password: hashedPassword });
+        await newUser.save();
+
+        // Initialize an empty cart record 
+        await Cart.create({ username, items: [] });
+
+        console.log(`✅ Success: User account "${username}" saved to MongoDB.`);
         res.status(201).json({ success: true });
     } catch (err) { next(err); }
 });
@@ -93,27 +126,30 @@ app.post('/api/v1/auth/login', async (req, res, next) => {
     try {
         const { username, password } = req.body;
         console.log(`🔑 Login challenge initiated for: "${username}"`);
-        const store = await readStore();
-        const user = store.users[username];
+        
+        const user = await User.findOne({ username });
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
             console.log(`❌ Login failed: Bad credentials for "${username}"`);
             return res.status(401).json({ success: false, error: "Invalid username or password." });
         }
 
-        const accessToken = jwt.sign({ username }, JWT_SECRET, { expiresIn: '1h' });
+        const accessToken = jwt.sign({ username }, JWT_SECRET, { expiresIn: '24h' });
         console.log(`✅ Login success: Access token issued to customer "${username}"`);
         res.status(200).json({ success: true, token: accessToken, username });
     } catch (err) { next(err); }
 });
 
 // ==========================================================
-// CART OPERATIONS
+// CART OPERATIONS 
 // ==========================================================
 app.get('/api/v1/cart', authenticateToken, async (req, res, next) => {
     try {
-        const store = await readStore();
-        res.status(200).json(store.carts[req.user.username] || []);
+        let cartRecord = await Cart.findOne({ username: req.user.username });
+        if (!cartRecord) {
+            cartRecord = await Cart.create({ username: req.user.username, items: [] });
+        }
+        res.status(200).json(cartRecord.items);
     } catch (err) { next(err); }
 });
 
@@ -121,52 +157,77 @@ app.post('/api/v1/cart', authenticateToken, async (req, res, next) => {
     try {
         const { itemId } = req.body;
         console.log(`🛒 Cart modification request from "${req.user.username}": Add Item ID ${itemId}`);
-        if (itemId === undefined || typeof itemId !== 'number') return res.status(400).json({ success: false, error: "Malformed ID." });
+        
+        if (!itemId) {
+            return res.status(400).json({ success: false, error: "Malformed or missing Item ID." });
+        }
 
-        const product = menuDatabase.find(d => d.id === itemId);
-        if (!product) return res.status(422).json({ success: false, error: "Item absent from inventory registry." });
+        const stringItemId = String(itemId);
+        let product = menuDatabase.find(d => String(d.id) === stringItemId);
 
-        const store = await readStore();
-        const userCart = store.carts[req.user.username] || [];
+        // Fallback default details if item is custom or unknown
+        if (!product) {
+            product = { id: stringItemId, name: "Special Culinary Item", price: 10.99 };
+        }
 
-        const match = userCart.find(i => i.id === itemId);
-        if (match) match.qty += 1;
-        else userCart.push({ id: product.id, name: product.name, price: product.price, qty: 1 });
+        let cartRecord = await Cart.findOne({ username: req.user.username });
+        if (!cartRecord) {
+            cartRecord = new Cart({ username: req.user.username, items: [] });
+        }
 
-        store.carts[req.user.username] = userCart;
-        await writeStore(store);
-        console.log(`💾 Saved updated cart for "${req.user.username}" to store file.`);
-        res.status(201).json({ success: true, cart: userCart });
+        const match = cartRecord.items.find(i => String(i.itemId) === stringItemId || String(i.id) === stringItemId);
+        if (match) {
+            match.qty += 1;
+        } else {
+            cartRecord.items.push({ 
+                itemId: stringItemId, 
+                name: product.name, 
+                price: product.price, 
+                qty: 1 
+            });
+        }
+
+        await cartRecord.save();
+        console.log(`💾 Saved updated cart for "${req.user.username}" to MongoDB.`);
+        res.status(201).json({ success: true, cart: cartRecord.items });
     } catch (err) { next(err); }
 });
 
 app.post('/api/v1/cart/quantity', authenticateToken, async (req, res, next) => {
     try {
         const { itemId, change } = req.body;
+        const stringItemId = String(itemId);
         console.log(`🔄 Quantity shift from "${req.user.username}": Item ID ${itemId} by ${change}`);
-        const store = await readStore();
-        let userCart = store.carts[req.user.username] || [];
-
-        const item = userCart.find(i => i.id === itemId);
-        if (item) {
-            item.qty += change;
-            if (item.qty <= 0) userCart = userCart.filter(i => i.id !== itemId);
+        
+        let cartRecord = await Cart.findOne({ username: req.user.username });
+        if (cartRecord) {
+            const item = cartRecord.items.find(i => String(i.itemId) === stringItemId || String(i.id) === stringItemId);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) {
+                    cartRecord.items = cartRecord.items.filter(i => String(i.itemId) !== stringItemId && String(i.id) !== stringItemId);
+                }
+            }
+            await cartRecord.save();
         }
 
-        store.carts[req.user.username] = userCart;
-        await writeStore(store);
-        res.status(200).json({ success: true, cart: userCart });
+        res.status(200).json({ success: true, cart: cartRecord ? cartRecord.items : [] });
     } catch (err) { next(err); }
 });
 
 app.post('/api/v1/cart/delete', authenticateToken, async (req, res, next) => {
     try {
         const { itemId } = req.body;
+        const stringItemId = String(itemId);
         console.log(`🗑️ Delete item request from "${req.user.username}": Item ID ${itemId}`);
-        const store = await readStore();
-        store.carts[req.user.username] = (store.carts[req.user.username] || []).filter(i => i.id !== itemId);
-        await writeStore(store);
-        res.status(200).json({ success: true, cart: store.carts[req.user.username] });
+        
+        let cartRecord = await Cart.findOne({ username: req.user.username });
+        if (cartRecord) {
+            cartRecord.items = cartRecord.items.filter(i => String(i.itemId) !== stringItemId && String(i.id) !== stringItemId);
+            await cartRecord.save(); 
+        }
+
+        res.status(200).json({ success: true, cart: cartRecord ? cartRecord.items : [] });
     } catch (err) { next(err); }
 });
 
@@ -175,8 +236,8 @@ app.post('/api/v1/cart/delete', authenticateToken, async (req, res, next) => {
 // ==========================================================
 app.post('/api/v1/checkout', authenticateToken, async (req, res, next) => {
     try {
-        const store = await readStore();
-        const userCart = store.carts[req.user.username] || [];
+        let cartRecord = await Cart.findOne({ username: req.user.username });
+        const userCart = cartRecord ? cartRecord.items : [];
 
         console.log(`💳 Checkout command executed by "${req.user.username}"...`);
 
@@ -188,41 +249,45 @@ app.post('/api/v1/checkout', authenticateToken, async (req, res, next) => {
         const rawTotal = userCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
         const finalizedTotal = parseFloat(rawTotal.toFixed(2));
 
-        // Create historical record receipt
-        const orderReceipt = {
-            orderId: "ORD-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
-            timestamp: new Date().toISOString(),
-            customer: req.user.username,
-            purchasedItems: [...userCart],
-            totalAmountPaid: finalizedTotal
-        };
+        const orderId = "ORD-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
 
-        if (!store.orders) store.orders = [];
-        
-        // Save history straight into json file
-        store.orders.push(orderReceipt);
-        
-        // Empty out user's active shopping cart session
-        store.carts[req.user.username] = []; 
-        
-        await writeStore(store);
-        console.log(`✅ Success: Transaction ${orderReceipt.orderId} logged. Total: $${orderReceipt.totalAmountPaid}.`);
+        // Create new Order document 
+        const newOrder = new Order({
+            orderId,
+            customer: req.user.username,
+            purchasedItems: userCart,
+            totalAmountPaid: finalizedTotal
+        });
+        await newOrder.save();
+
+        // Clear user cart 
+        cartRecord.items = [];
+        await cartRecord.save();
+
+        console.log(`✅ Success: Transaction ${orderId} logged into MongoDB. Total: $${finalizedTotal}.`);
         res.status(200).json({ 
             success: true, 
-            orderId: orderReceipt.orderId, 
-            totalAmount: orderReceipt.totalAmountPaid.toFixed(2) 
+            orderId: orderId, 
+            totalAmount: finalizedTotal.toFixed(2) 
         });
     } catch (err) { next(err); }
 });
 
+// ==========================================================
+// MONGODB CRUD ROUTES
+// ==========================================================
+app.use('/api/v1/items', itemRoutes);
+
+// ==========================================================
+// GLOBAL ERROR HANDLING MIDDLEWARE
+// ==========================================================
 app.use((err, req, res, next) => {
     console.error("🚨 Fault Trapped:", err.stack);
     res.status(500).json({ success: false, error: "Internal System Error." });
 });
 
-initializeStore().then(() => {
-    app.listen(PORT, () => {
-        console.log(`🚀 Foodie Express Backend active on port ${PORT}`);
-        console.log(`📝 Monitoring database: ${DATA_FILE}\n`);
-    });
+// Server Boot Sequence
+app.listen(PORT, () => {
+    console.log(`🚀 Foodie Express Backend active on port ${PORT}`);
+    console.log(`📝 Connected to Database Collections: users, carts, orders\n`);
 });
